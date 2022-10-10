@@ -34,7 +34,6 @@ class SentinelImage():
         fileNamePrefix = shooting_date + '_RAW'
         self.__downloadImageToDrive(img,fileNamePrefix)
     
-    
     # センチネル画像取得（トゥルーカラー）
     def get_truecolor_image(self,shooting_date):
 
@@ -53,10 +52,8 @@ class SentinelImage():
         fileNamePrefix = shooting_date + '_NDVI'
         self.__downloadImageToDrive(img_ndvi,fileNamePrefix)
     
-
     # センチネル画像取得（EVI2）
     def get_evi2_image(self,shooting_date):
-        
         
         img =self.__imageCollection_S2SR_Raw(shooting_date).mean()
         # バンド反射率整数値の式（小数値の反射率であれば'2.5 * (nir - red) / (nir + 2.4 * red + 1)'で示される）
@@ -118,7 +115,6 @@ class SentinelImage():
                 maxPixels = 100000000
                 )
         task.start()
-        
         
     # イメージコレクションをGoogleDriveに保存
     def __downloadImageCollectionToDrive(self, imageCollection, fileNamePrefix):
