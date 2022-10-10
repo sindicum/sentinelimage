@@ -1,4 +1,3 @@
-from typing import Union
 from sentinelimage import SentinelImage
 
 coords = [[
@@ -9,11 +8,11 @@ coords = [[
     [ 143.318056522214533, 43.242223343374064 ]
 ]]
 
-image_name: str = 'usage'
-start_date: str ='2021-07-10'
-end_date: str = '2021-7-20'
-cloudy_pixel_percentage_limit: int = 80
-google_drive_dir: str = 'Download_From_GEE'
+image_name = 'usage'
+start_date ='2021-07-10'
+end_date = '2021-7-20'
+cloudy_pixel_percentage_limit = 80
+google_drive_dir = 'Download_From_GEE'
 
 # SentinelImageオブジェクトを作成
 ee_obj = SentinelImage(coords, image_name, start_date, end_date,

@@ -1,4 +1,3 @@
-from typing import Any, Union
 # バッチダウンロードのためgeetoolsをインポート
 from geetools import batch
 import ee
@@ -78,7 +77,7 @@ class SentinelImage():
         self.__downloadImageToDrive(img_ndwi,fileNamePrefix)
     
     # センチネル画像撮影日（リストで取得）
-    def __getShootingDate(self) -> list[str]:
+    def __getShootingDate(self):
         imgCollection = (self.ee.ImageCollection(self.data_set)
                         .filterBounds(self.ee.Geometry.Polygon(self.coords))
                         .filterDate(self.start_date, self.end_date)
@@ -108,7 +107,7 @@ class SentinelImage():
                     .select(['TCI_R','TCI_G','TCI_B'])
         
     # イメージをGoogleDriveに保存（maxPixelsはデフォルトの1億ピクセル）
-    def __downloadImageToDrive(self,image : Any ,fileNamePrefix : str):
+    def __downloadImageToDrive(self, image, fileNamePrefix):
         task = self.ee.batch.Export.image.toDrive(
                 image = image,
                 region = self.ee.Geometry.Polygon(self.coords),
@@ -122,7 +121,7 @@ class SentinelImage():
         
         
     # イメージコレクションをGoogleDriveに保存
-    def __downloadImageCollectionToDrive(self,imageCollection :Any,fileNamePrefix : str):
+    def __downloadImageCollectionToDrive(self, imageCollection, fileNamePrefix):
                 
         batch.Export.imagecollection.toDrive(
             collection=imageCollection,
@@ -133,7 +132,7 @@ class SentinelImage():
             crs='EPSG:3857'
             )
 
-    def get_asset_id(self) -> list:
+    def get_asset_id(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
                     .filterDate(self.start_date, self.end_date)\
@@ -141,7 +140,7 @@ class SentinelImage():
 
         return imgCollection.aggregate_array('system:index').getInfo()
 
-    def get_spacecraft_name(self) -> list:
+    def get_spacecraft_name(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
                     .filterDate(self.start_date, self.end_date)\
