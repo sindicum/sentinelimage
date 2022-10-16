@@ -158,7 +158,7 @@ class SentinelImage():
     
     # センチネル画像（主要バンドB2,B3,B4,B8,B11,SCL）にS2_CLOUD_PROBABILITYを合成し雲マスク処理
     # https://developers.google.com/earth-engine/tutorials/community/sentinel-2-s2cloudless
-    def get_image_add_cldmasked(self, SHOOTING_DATE, CLD_PRB_THRESH = 50, 
+    def get_image_add_cldmask(self, SHOOTING_DATE, CLD_PRB_THRESH = 50, 
                                 NIR_DRK_THRESH = 0.15, CLD_PRJ_DIST = 1, BUFFER = 50):
         
         # CLD_PRB_THRESH = 50(%)
@@ -191,7 +191,7 @@ class SentinelImage():
             return s2_sr_cld_col_eval.map(lambda img:img.addBands(self.ee.Image(img.get('s2cloudless')).rename('CLD_PRB')))
 
         # 雲および雲陰内ダークピクセルをマスク化
-        def get_cloud_masked_img(img):
+        def get_cloud_mask_img(img):
             
             clouds = img.select('CLD_PRB').gt(CLD_PRB_THRESH)
 
@@ -219,9 +219,9 @@ class SentinelImage():
         
         # 撮影日のイメージコレクションを取得し各画像をマスク処理
         imgcol = get_sr2_cldprb_imgcol(SHOOTING_DATE)
-        ctf_imgcol = imgcol.map(lambda img: get_cloud_masked_img(img))
+        ctf_imgcol = imgcol.map(lambda img: get_cloud_mask_img(img))
         
-        fileNamePrefix = SHOOTING_DATE + '_CLDMASKED'
+        fileNamePrefix = SHOOTING_DATE + '_CLDMASK'
         # toUnint16()でキャストしておりnanはすべて0になる。
         self.__downloadImageToDrive(ctf_imgcol.mean().toUint16(),fileNamePrefix)
         
