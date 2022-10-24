@@ -37,10 +37,10 @@ class SentinelImageREST:
                     field_name: str
                 ):
         self.coords = coords
-        self.field_name = field_name
         self.start_date = start_date
         self.end_date = end_date
         self.cloudy_pixel_percentage_limit = cloudy_pixel_percentage_limit
+        self.field_name = field_name
         self.output_image_dir = output_image_dir
         self.session = self.__create_session()
         
@@ -343,8 +343,13 @@ class SentinelImageREST:
                         '_raw_' + asset_id_date + '.tif','wb') as f:
                 f.write(content)
 
-    def create_vi_meshpolygon(self, coords: list[list[list[float]]],vi_name: Literal['NDVI','EVI2','NDWI'], 
-                                shooting_date_list: list[str],buffer: int=0):
+    
+    def create_vi_meshpolygon(self,
+                                coords: list[list[list[float]]],
+                                vi_name: Literal['NDVI','EVI2','NDWI'], 
+                                shooting_date_list: list[str],
+                                buffer: int=0
+                            ):
 
         # メッシュポリゴン格納用のGeoPandasオブジェクト
         meshpolygon = gpd.GeoDataFrame()
