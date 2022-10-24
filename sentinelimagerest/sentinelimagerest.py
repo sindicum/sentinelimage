@@ -19,7 +19,7 @@ from shapely.geometry import Polygon
 '''
 
 SERVICE_ACCOUNT = os.environ.get('GCP_SERVICE_ACCOUNT')
-KEY =  os.getcwd() + '/' + str(os.environ.get('GCP_KEY_FILE'))
+KEY =  os.environ.get('GCP_KEY_FILE')
 PROJECT_ID = os.environ.get('GCP_PROJECT_ID')
 PBULIC_PROJECT = 'projects/earthengine-public'
 ASSETS = 'COPERNICUS/S2_SR_HARMONIZED'
