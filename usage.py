@@ -47,4 +47,4 @@ for shooting_date in shooting_date_list:
     ee_obj.get_ndwi_image(shooting_date)
 
     # マスク処理センチネル画像取得
-    ee_obj.get_image_add_cldmasked(shooting_date)
+    ee_obj.get_image_add_cldmask(shooting_date)
