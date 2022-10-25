@@ -1,0 +1,10 @@
+version: "3"
+services:
+  sentinelimage:
+    container_name: "sentinel_image"
+    build: .
+    env_file: ./docker.env
+    volumes:
+      - .:/code
+    tty: true
+    stdin_open: true

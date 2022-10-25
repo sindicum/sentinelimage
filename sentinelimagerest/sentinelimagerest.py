@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json, os, urllib, requests
-from re import A
+# from re import A
 from typing import Literal
 
 import ee
@@ -40,8 +40,8 @@ class SentinelImageREST:
         self.start_date = start_date
         self.end_date = end_date
         self.cloudy_pixel_percentage_limit = cloudy_pixel_percentage_limit
-        self.field_name = field_name
         self.output_image_dir = output_image_dir
+        self.field_name = field_name
         self.session = self.__create_session()
         
     def __create_session(self):
