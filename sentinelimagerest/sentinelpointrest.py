@@ -73,7 +73,6 @@ class SentinelPointREST:
         response = self.session.get(url)
         content = response.content
         dict_data = json.loads(content)
-        print(dict_data)
         asset_id_list = []
         if len(dict_data) == 0:
             return []

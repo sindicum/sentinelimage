@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json, os, urllib, requests
-from re import A
+# from re import A
 from typing import Literal
 
 import ee
@@ -37,11 +37,11 @@ class SentinelImageREST:
                     field_name: str
                 ):
         self.coords = coords
-        self.field_name = field_name
         self.start_date = start_date
         self.end_date = end_date
         self.cloudy_pixel_percentage_limit = cloudy_pixel_percentage_limit
         self.output_image_dir = output_image_dir
+        self.field_name = field_name
         self.session = self.__create_session()
         
     def __create_session(self):
@@ -343,8 +343,13 @@ class SentinelImageREST:
                         '_raw_' + asset_id_date + '.tif','wb') as f:
                 f.write(content)
 
-    def create_vi_meshpolygon(self, coords: list[list[list[float]]],vi_name: Literal['NDVI','EVI2','NDWI'], 
-                                shooting_date_list: list[str],buffer: int=0):
+    
+    def create_vi_meshpolygon(self,
+                                coords: list[list[list[float]]],
+                                vi_name: Literal['NDVI','EVI2','NDWI'], 
+                                shooting_date_list: list[str],
+                                buffer: int=0
+                            ):
 
         # メッシュポリゴン格納用のGeoPandasオブジェクト
         meshpolygon = gpd.GeoDataFrame()
