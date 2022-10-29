@@ -99,7 +99,7 @@ class TestSentinelImageREST(unittest.TestCase):
             self.assertEqual('tif',img[-3:])
 
     def test_vi_meshpolygon(self):
-        gdf = self.obj_vi.create_vi_meshpolygon(self.coords,'EVI2',self.obj_vi.get_shootingdate_list())
+        gdf = self.obj_vi.create_vi_meshpolygon('EVI2')
         self.assertTrue(len(gdf) > 0)
         
 if __name__ == "__main__":

@@ -345,9 +345,7 @@ class SentinelImageREST:
 
     
     def create_vi_meshpolygon(self,
-                                coords: list[list[list[float]]],
                                 vi_name: Literal['NDVI','EVI2','NDWI'], 
-                                shooting_date_list: list[str],
                                 buffer: int=0
                             ):
 
@@ -356,9 +354,9 @@ class SentinelImageREST:
         # VIデータ格納用のPandasオブジェクト
         vi_data_stack = pd.DataFrame()
         
-        for idx,shooting_date in enumerate(shooting_date_list):
+        for idx,shooting_date in enumerate(self.get_shootingdate_list()):
 
-            image_content = self.__get_vi_image_content(coords,shooting_date,vi_name,buffer)
+            image_content = self.__get_vi_image_content(self.coords,shooting_date,vi_name,buffer)
             
             with MemoryFile(image_content) as memfile:
                 with memfile.open() as rasterio_dataset:
@@ -382,7 +380,7 @@ class SentinelImageREST:
         merged_meshpolygon = merged_meshpolygon.drop('index', axis=1)
         # 圃場形状ポリゴンの作成（切り抜き用）
         mask_polygon = gpd.GeoDataFrame()
-        mask_polygon.loc[0,'geometry'] = Polygon(coords[0])
+        mask_polygon.loc[0,'geometry'] = Polygon(self.coords[0])
         mask_polygon = mask_polygon.set_crs('epsg:4326')
         
         # 圃場形状ポリゴンに沿ってVIデータ入りメッシュポリゴンを切り抜き
