@@ -101,6 +101,11 @@ class TestSentinelImageREST(unittest.TestCase):
     def test_vi_meshpolygon(self):
         gdf = self.obj_vi.create_vi_meshpolygon('EVI2')
         self.assertTrue(len(gdf) > 0)
+    
+    def test_get_numpy_tc(self):
+        shooting_date_list = self.obj_tc.get_shootingdate_list()
+        np_arr = self.obj_tc.get_numpy_tc(shooting_date_list[0])
+        self.assertEqual(3,len(np_arr['image']))
         
 if __name__ == "__main__":
     unittest.main()

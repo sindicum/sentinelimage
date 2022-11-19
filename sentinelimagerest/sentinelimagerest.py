@@ -464,8 +464,8 @@ class SentinelImageREST:
 
         return [list(nw4326),list(ne4326),list(se4326),list(sw4326)]
 
-    # foliumで表示されるためにnumpy形式の画像データとbounds（画像矩形座標）を取得
-    def get_ndvi_for_folium(self, shooting_date: str, buffer: int=0):
+    # foliumで表示されるためにnumpy形式のndviデータとbounds（画像矩形座標）を取得
+    def get_numpy_ndvi(self, shooting_date: str, buffer: int=0):
         
         # バッファー0はエラーが出る
         if buffer == 0:
@@ -512,3 +512,50 @@ class SentinelImageREST:
                 sw4326 = trans_proj.transform(west, south)
 
                 return {'image': rasterio_dataset.read()[0],'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
+
+    # foliumで表示されるためにnumpy形式のtcデータとbounds（画像矩形座標）を取得
+    def get_numpy_tc(self, shooting_date: str, buffer: int=0):
+        
+        # バッファー0はエラーが出る
+        if buffer == 0:
+            clip_geom = ee.Geometry.Polygon(self.coords)
+        else:
+            clip_geom = ee.Geometry.Polygon(self.coords).buffer(buffer)
+            
+
+        ee_image_obj = ee.ImageCollection(ASSETS)\
+            .filterBounds(ee.Geometry.Polygon(self.coords))\
+            .filterDate(ee.Date(shooting_date), ee.Date(shooting_date).advance(1,'day'))\
+            .select(['TCI_R', 'TCI_G', 'TCI_B'])\
+            .mean()\
+            .reproject('EPSG:3857',None,10)\
+            .clip(clip_geom)
+
+        url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'
+        url = url.format(PROJECT_ID)
+        response = self.session.post(
+            url=url,
+            data=json.dumps({
+            'expression': ee.serializer.encode(ee_image_obj),
+            'fileFormat': 'GEO_TIFF',
+            'grid': {
+                'crsCode': 'EPSG:3857'
+                }
+            }),
+        )
+        image_content = response.content
+
+        with MemoryFile(image_content) as memfile:
+            with memfile.open() as rasterio_dataset:
+
+                west  = rasterio_dataset.bounds.left
+                south = rasterio_dataset.bounds.bottom
+                east  = rasterio_dataset.bounds.right
+                north = rasterio_dataset.bounds.top
+                
+                trans_proj = Transformer.from_crs('EPSG:3857',"EPSG:4326", always_xy=True)
+
+                ne4326 = trans_proj.transform(east, north)
+                sw4326 = trans_proj.transform(west, south)
+
+                return {'image': rasterio_dataset.read(),'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
