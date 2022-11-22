@@ -104,7 +104,7 @@ class SentinelPointREST:
             ee_image_obj = ee.ImageCollection(ASSETS)\
                 .filterBounds(ee.Geometry.Point(self.point_coords))\
                 .filterDate(ee.Date(shooting_date), ee.Date(shooting_date).advance(1,'day'))\
-                .select(['B2','B3','B4','B8','B11'])\
+                .select(['B2','B3','B4','B8','B11','SCL'])\
                 .mean()\
                 .reproject('EPSG:4326',None,10)\
                 .clip(ee.Geometry.Point(self.point_coords))
@@ -133,10 +133,11 @@ class SentinelPointREST:
             b11 = float('{:.4f}'.format(array[0][0][4]/10000)) 
             ndvi = float('{:.4f}'.format((b8-b4)/(b8+b4)))
             evi2 = float('{:.4f}'.format(2.5*(b8-b4)/(b8+2.4*b4+1))) 
+            scl = array[0][0][5]
 
             point_raw_array.append({
                 'shooting_date':str(shooting_date),
-                'data':{'B2':b2,'B3':b3,'B4':b4,'B8':b8,'B11':b11,'ndvi':ndvi,'evi2':evi2 }
+                'data':{'B2':b2,'B3':b3,'B4':b4,'B8':b8,'B11':b11,'ndvi':ndvi,'evi2':evi2,'scl':scl }
                 })
         return point_raw_array
     
@@ -160,6 +161,7 @@ class SentinelPointREST:
             b11 =  point_data['data']['B11']
             ndvi = point_data['data']['ndvi']
             evi2 = point_data['data']['evi2']
+            scl = point_data['data']['scl']
             
             gdf.loc[idx,'geometry'] = Point(lng,lat)
             gdf.loc[idx,'shooting_date'] = shooting_date
@@ -170,6 +172,7 @@ class SentinelPointREST:
             gdf.loc[idx,'B11'] = b11
             gdf.loc[idx,'NDVI'] = ndvi
             gdf.loc[idx,'EVI2'] = evi2
+            gdf.loc[idx,'SCL'] = scl
         
         return gdf
     
