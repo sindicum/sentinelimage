@@ -351,7 +351,7 @@ class SentinelImageREST:
 
     
     def create_vi_meshpolygon(self,
-                                vi_name: Literal['NDVI','EVI2','NDWI'], 
+                                vi_name: Literal['NDVI','EVI2','NDWI','OM'], 
                                 buffer: int=0
                             ):
 
