@@ -103,7 +103,7 @@ class SentinelImage():
                     .filter(self.ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',self.cloudy_pixel_percentage_limit))\
                     .select(['TCI_R','TCI_G','TCI_B'])
         
-    # イメージをGoogleDriveに保存（maxPixelsはデフォルトの1億ピクセル）
+    # イメージをGoogleDriveに保存（maxPixelsはデフォルト1億ピクセルから10億ピクセルに変更）
     def __downloadImageToDrive(self, image, fileNamePrefix):
         task = self.ee.batch.Export.image.toDrive(
                 image = image,
@@ -112,7 +112,7 @@ class SentinelImage():
                 fileNamePrefix = self.image_name + '_' + fileNamePrefix,
                 scale = 10,
                 crs = 'EPSG:3857',
-                maxPixels = 100000000
+                maxPixels = 1000000000
                 )
         task.start()
         
