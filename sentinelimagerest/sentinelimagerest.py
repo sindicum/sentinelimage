@@ -349,7 +349,7 @@ class SentinelImageREST:
                         '_raw_' + asset_id_date + '.tif','wb') as f:
                 f.write(content)
 
-    
+    # メッシュポリゴンに時系列VIデータを付与しGeoDataFrame形式で返す
     def create_vi_meshpolygon(self,
                                 vi_name: Literal['NDVI','EVI2','NDWI','OM'], 
                                 buffer: int=0
@@ -384,10 +384,11 @@ class SentinelImageREST:
         # メッシュポリゴンにVIデータをindexで結合
         merged_meshpolygon = meshpolygon.merge(vi_data_stack, on='index')
         merged_meshpolygon = merged_meshpolygon.drop('index', axis=1)
+        
         # 圃場形状ポリゴンの作成（切り抜き用）
-        mask_polygon = gpd.GeoDataFrame()
-        mask_polygon.loc[0,'geometry'] = Polygon(self.coords[0])
-        mask_polygon = mask_polygon.set_crs('epsg:4326')
+        mask_polygon = gpd.GeoSeries(
+            data=[Polygon(self.coords[0])],
+            crs='epsg:4326')
         
         # 圃場形状ポリゴンに沿ってVIデータ入りメッシュポリゴンを切り抜き
         merged_meshpolygon = gpd.clip(gdf=merged_meshpolygon, mask=mask_polygon)
