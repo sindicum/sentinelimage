@@ -16,7 +16,8 @@ class SentinelImage():
                     start_date,
                     end_date,
                     cloudy_pixel_percentage_limit,
-                    google_drive_dir
+                    google_drive_dir,
+                    crs
                 ):
         self.ee = ee
         self.coords = coords
@@ -25,6 +26,7 @@ class SentinelImage():
         self.end_date = end_date
         self.cloudy_pixel_percentage_limit = cloudy_pixel_percentage_limit
         self.google_drive_dir = google_drive_dir
+        self.crs = crs
         self.shooting_date_list = self.__getShootingDate()
     
     # センチネル画像取得（主要バンドB2,B3,B4,B8,B11,SCL）
@@ -111,7 +113,7 @@ class SentinelImage():
                 folder = self.google_drive_dir,
                 fileNamePrefix = self.image_name + '_' + fileNamePrefix,
                 scale = 10,
-                crs = 'EPSG:3857',
+                crs = self.crs,
                 maxPixels = 1000000000
                 )
         task.start()
@@ -125,7 +127,7 @@ class SentinelImage():
             namePattern= self.image_name + '_' +  fileNamePrefix +  '_{id}',
             scale= 10,
             region= self.ee.Geometry.Polygon(self.coords),
-            crs='EPSG:3857'
+            crs= self.crs
             )
 
     def get_asset_id(self):

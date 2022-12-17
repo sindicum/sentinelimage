@@ -1,3 +1,12 @@
+import glob,os,shutil,sys,unittest
+
+# 上位インポート先を追加
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from sentinelimagerest.sentinelimagerest import SentinelImageREST
+
+
+
 from sentinelimagerest import SentinelImageREST
 
 # 画像取得したいポリゴン座標

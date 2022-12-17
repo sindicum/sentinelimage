@@ -10,7 +10,7 @@ coords = [[
 ]]
 
 # 出力画像名の接頭辞
-image_name = 'usage'
+image_name = 'usage2'
 # 対象期間（開始）
 start_date ='2021-07-10'
 # 対象期間（終了）
@@ -20,9 +20,11 @@ cloudy_pixel_percentage_limit = 80
 # GoogleDrive出力先フォルダ名
 google_drive_dir = 'Download_From_GEE'
 
+crs = 'EPSG:6681'
+
 # SentinelImageオブジェクトを作成（変数値の入力）
 ee_obj = SentinelImage(coords, image_name, start_date, end_date,
-                        cloudy_pixel_percentage_limit, google_drive_dir)
+                        cloudy_pixel_percentage_limit, google_drive_dir, crs)
 
 # センチネル画像撮影日（リストで取得）
 shooting_date_list = ee_obj.shooting_date_list

@@ -203,7 +203,7 @@ class SentinelImageREST:
         return response.content
 
     # GeoTIFFデータ（指定VI）の取得
-    def __get_vi_image_content(self,coords, shooting_date: str, vi_name: Literal['NDVI','EVI2','NDWI','OM'], buffer: int=0):
+    def __get_vi_image_content(self,coords, shooting_date: str, vi_name: Literal['NDVI','EVI2','NDWI'], buffer: int=0):
         
         # バッファー0はエラーが出る
         if buffer == 0:
@@ -236,12 +236,6 @@ class SentinelImageREST:
                 ee_image_obj = ee_image_obj\
                                 .normalizedDifference(['B4', 'B11'])\
                                 .rename('NDWI')
-            elif vi_name == 'OM':
-                ee_image_obj = ee_image_obj\
-                                .expression( '(swir1 - red) / (swir1 + 2 * red + 1000)',
-                                            { 'swir1':ee_image_obj.select('B11'),
-                                                'red':ee_image_obj.select('B4') })\
-                                .rename('OM')
             return ee_image_obj
         
         url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'
@@ -337,7 +331,7 @@ class SentinelImageREST:
                 'fileFormat': 'GEO_TIFF',
                 'bandIds': ['B2', 'B3', 'B4', 'B8', 'B11'],
                 'region': {"type":"Polygon", "coordinates": self.coords },
-                'grid': {'crsCode': 'EPSG:3857'},
+                'grid': {'crsCode': 'EPSG:4326'},
             })
         
             response = self.session.post(url, body)
