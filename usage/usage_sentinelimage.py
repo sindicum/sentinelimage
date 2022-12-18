@@ -10,7 +10,7 @@ coords = [[
 ]]
 
 # 出力画像名の接頭辞
-image_name = 'usage2'
+image_name = 'usage'
 # 対象期間（開始）
 start_date ='2021-07-10'
 # 対象期間（終了）
