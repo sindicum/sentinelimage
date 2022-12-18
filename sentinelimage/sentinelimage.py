@@ -111,7 +111,7 @@ class SentinelImage():
                 image = image,
                 region = self.ee.Geometry.Polygon(self.coords),
                 folder = self.google_drive_dir,
-                fileNamePrefix = self.image_name + '_' + self.crs + '_' + fileNamePrefix,
+                fileNamePrefix = self.image_name + '_' + self.crs[-4:] + '_' + fileNamePrefix,
                 scale = 10,
                 crs = self.crs,
                 maxPixels = 1000000000
@@ -124,7 +124,7 @@ class SentinelImage():
         batch.Export.imagecollection.toDrive(
             collection=imageCollection,
             folder=self.google_drive_dir,
-            namePattern= self.image_name + '_' + self.crs + '_' + fileNamePrefix +  '_{id}',
+            namePattern= self.image_name + '_' + self.crs[-4:] + '_' + fileNamePrefix +  '_{id}',
             scale= 10,
             region= self.ee.Geometry.Polygon(self.coords),
             crs= self.crs
