@@ -40,8 +40,11 @@ print(obj.get_asset_id_list())
 # Geotiffファイル（各バンド）の取得
 obj.get_geotiff_raw_from_assetid(output_dir)
 
-# メッシュポリゴンに時系列VIデータを付与しGeoDataFrame形式で返す
+# メッシュポリゴンに時系列VIデータを付与しGeoDataFrameデータをFlatGeobuf形式で保存（Q-GIS3.16で動作確認）
 obj.create_vi_meshpolygon('EVI2').to_file('test.fgb',index=False,driver='FlatGeobuf',spatial_index='No')
+
+# メッシュポリゴンに時系列VIデータを付与しGeoDataFrameデータをShapeFile形式で保存（汎用性を求める場合）
+obj.create_vi_meshpolygon('EVI2').to_file('test.shp')
 
 # foliumで表示されるためにnumpy形式のndviデータとbounds（画像矩形座標）を取得
 print(obj.get_numpy_ndvi(obj.get_shootingdate_list()[0]))
