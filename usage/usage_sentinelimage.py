@@ -19,8 +19,8 @@ end_date = '2021-7-20'
 cloudy_pixel_percentage_limit = 80
 # GoogleDrive出力先フォルダ名
 google_drive_dir = 'Download_From_GEE'
-
-crs = 'EPSG:6681'
+# 座標参照系の設定（WEBマップはEPSG:3857）
+crs = 'EPSG:3857'
 
 # SentinelImageオブジェクトを作成（変数値の入力）
 ee_obj = SentinelImage(coords, image_name, start_date, end_date,
