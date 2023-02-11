@@ -1,6 +1,5 @@
 from __future__ import annotations
 import json, os, urllib, requests
-# from re import A
 from typing import Literal
 
 import ee
@@ -14,7 +13,7 @@ from rasterio.io import MemoryFile
 from shapely.geometry import Polygon
 
 '''
-リクエストサイズが大きいと以下のエラーが発生
+リクエストサイズが大きいとエラーが発生するので注意！
 "Total request size must be less than or equal to 50331648 bytes.",
 '''
 
@@ -252,7 +251,6 @@ class SentinelImageREST:
             })
         )
         return response.content
-
 
     # GeoTIFFデータ（トゥルーカラー）の取得
     def __get_tc_image_content(self,coords, shooting_date: str, buffer: int=0):

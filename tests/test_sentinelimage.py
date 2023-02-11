@@ -1,4 +1,5 @@
 import glob,os,shutil,sys,unittest
+
 # 上位インポート先を追加
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -30,4 +31,27 @@ crs = 'EPSG:6681'
 ee_obj = SentinelImage(coords, image_name, start_date, end_date,
                         cloudy_pixel_percentage_limit, google_drive_dir, crs)
 
-ee_obj.task_status()
+# センチネル画像撮影日（リストで取得）
+shooting_date_list = ee_obj.shooting_date_list
+print(shooting_date_list)
+
+# # 画像撮影日ごとに画像をGoogleDrive内に出力
+# for shooting_date in shooting_date_list:
+
+#     # センチネル画像取得（主要バンドB2,B3,B4,B8,B11,SCL）
+#     ee_obj.get_raw_image(shooting_date)
+
+#     # センチネル画像取得（トゥルーカラー）
+#     ee_obj.get_truecolor_image(shooting_date)
+    
+#     # # センチネル画像取得（NDVI）
+#     ee_obj.get_ndvi_image(shooting_date)
+    
+#     # # センチネル画像取得（EVI2）
+#     ee_obj.get_evi2_image(shooting_date)
+    
+#     # センチネル画像取得（NDWI）
+#     ee_obj.get_ndwi_image(shooting_date)
+
+#     # マスク処理センチネル画像取得
+#     ee_obj.get_image_add_cldmask(shooting_date)
