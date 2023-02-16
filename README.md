@@ -13,12 +13,12 @@ pip install git+https://github.com/sindicum/sentinelimage.git
 - 使用方法はusageディレクトリを参照
 
 ## REST APIを使用時の設定
-1.GCPでサービスアカウントを発行し鍵ファイルをプログラム実行階層に配置
-2.以下の環境変数を設定（Dockerを使う場合はdocker.envファイルに記述）
+1.GCPでサービスアカウントを発行し鍵ファイルをプログラム実行階層に配置  
+2.以下の環境変数を設定（Dockerを使う場合はdocker.envファイルに記述）  
 ```
 GCP_KEY_FILE='<キーファイル名>.json'
 GCP_PROJECT_ID='<プロジェクトID名>'
 GCP_SERVICE_ACCOUNT='<サービスアカウント名>@<プロジェクトID名>.iam.gserviceaccount.com'
 ```
-3.依存ライブラリ
+3.依存ライブラリ  
 geopandas, pandas, pyproj, rasterio, shapely
