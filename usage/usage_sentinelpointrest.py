@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-from sentinelimagerest.sentinelpointrest import SentinelPointREST
-
-# 画像取得したいポイント座標
-point_coords = [143.276643,43.211713]
-
-# 対象期間（開始）
-start_date ='2021-07-10'
-# 対象期間（終了）
-end_date = '2021-7-20'
-=======
 # 上位インポート先を追加
 import os,sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -23,7 +12,7 @@ point_coords =  [143.2931216419206,43.24765387380492]
 start_date ='2021-07-16'
 # 対象期間（終了）
 end_date = '2021-7-23'
->>>>>>> devdocker
+
 # 雲被覆率フィルタリングの上限値
 cloudy_pixel_percentage_limit = 30
 
@@ -39,15 +28,9 @@ assetid_list = obj.get_asset_id_list()
 print(assetid_list)
 
 # 各バンド反射率（0〜10000）を配列で取得
-<<<<<<< HEAD
-reflectance_array = obj.get_point_data_from_assetid(assetid_list[0])
-print(reflectance_array)
-=======
 for assetid in assetid_list:
     reflectance_array = obj.get_point_data_from_assetid(assetid)
     print(reflectance_array)
-
->>>>>>> devdocker
 
 # 各バンド反射率（0〜1）、NDVI、EVI2を辞書形式で取得
 reflectance_dict = obj.get_computed_point_data()

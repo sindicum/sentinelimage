@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-from sentinelimagerest import SentinelImageREST
-=======
 # 上位インポート先を追加
 import os,sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from sentinelimagerest.sentinelimagerest import SentinelImageREST
 
 # from sentinelimagerest import SentinelImageREST
->>>>>>> devdocker
 
 # 画像取得したいポリゴン座標
 coords = [[
