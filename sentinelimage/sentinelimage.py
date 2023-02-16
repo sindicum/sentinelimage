@@ -42,6 +42,16 @@ class SentinelImage():
         img=self.__imageCollection_S2SR_TC(shooting_date).mean()
         fileNamePrefix = shooting_date + '_TC'
         self.__downloadImageToDrive(img,fileNamePrefix)
+        
+    # センチネル画像（トゥルーカラー）を取得し動画化
+    def get_truecolor_video(self,framesPerSecond):
+
+        imgcol=(self.ee.ImageCollection(self.data_set)
+                    .filterBounds(self.ee.Geometry.Polygon(self.coords))
+                    .filterDate(self.ee.Date(self.start_date), self.ee.Date(self.end_date))
+                    .filter(self.ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE',self.cloudy_pixel_percentage_limit))
+                    .select(['TCI_R','TCI_G','TCI_B']))
+        self.__downloadVideoToDrive(imgcol,framesPerSecond)
 
     # センチネル画像取得（NDVI）
     def get_ndvi_image(self,shooting_date):
@@ -118,18 +128,20 @@ class SentinelImage():
                 )
         task.start()
         
-    # イメージコレクションをGoogleDriveに保存
-    def __downloadImageCollectionToDrive(self, imageCollection, fileNamePrefix):
-                
-        batch.Export.imagecollection.toDrive(
+    # イメージコレクションをVideo化しGoogleDriveに保存
+    def __downloadVideoToDrive(self, imageCollection, framesPerSecond):
+        task = self.ee.batch.Export.video.toDrive(
             collection=imageCollection,
             folder=self.google_drive_dir,
-            namePattern= self.image_name + '_' + fileNamePrefix +  '_{id}',
+            fileNamePrefix= self.image_name + '_TC_video',
+            framesPerSecond=framesPerSecond,
             scale= 10,
             region= self.ee.Geometry.Polygon(self.coords),
             crs= self.crs
             )
+        task.start()
 
+    # 衛星画像のassetID取得
     def get_asset_id(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
@@ -138,6 +150,7 @@ class SentinelImage():
 
         return imgCollection.aggregate_array('system:index').getInfo()
 
+    # 衛星名の取得
     def get_spacecraft_name(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
@@ -146,10 +159,11 @@ class SentinelImage():
 
         return imgCollection.aggregate_array('SPACECRAFT_NAME').getInfo()
 
+    # assetIDを基に当該衛星画像を取得 
     def get_asset_id_image(self,asset_id):
-        image=self.ee.Image(asset_id).select(['B2','B3','B4','B8','B11','SCL'])
-
-        fileNamePrefix = 'asset_id'
+        
+        image=self.ee.Image(self.data_set +'/' +asset_id).select(['B2','B3','B4','B8','B11'])
+        fileNamePrefix = asset_id
         self.__downloadImageToDrive(image,fileNamePrefix)
         
     # バッチ処理の状態確認

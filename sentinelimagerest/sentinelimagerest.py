@@ -1,6 +1,5 @@
 from __future__ import annotations
 import json, os, urllib, requests
-# from re import A
 from typing import Literal
 
 import ee
@@ -14,7 +13,7 @@ from rasterio.io import MemoryFile
 from shapely.geometry import Polygon
 
 '''
-リクエストサイズが大きいと以下のエラーが発生
+リクエストサイズが大きいとエラーが発生するので注意！
 "Total request size must be less than or equal to 50331648 bytes.",
 '''
 
@@ -74,7 +73,7 @@ class SentinelImageREST:
             shooting_date_list.sort()
             return shooting_date_list
 
-    # 5バンド（'B2','B3','B4','B8','B11'）のGeotiffファイルを取得、バッファー初期値は0
+    # 5バンド（'B2','B3','B4','B8','B11'）のGeoTIFFファイルを取得、バッファー初期値は0
     def get_geotiff_raw(self,buffer: int=0):
                 
         shooting_date_list = self.get_shootingdate_list()
@@ -105,7 +104,7 @@ class SentinelImageREST:
                                 '_raw_' + shooting_date + '.txt','wb') as f:
                         f.write(image_content)
 
-    # 指定したVIのGeotiffファイルを取得、バッファー初期値は0
+    # 指定したVIのGeoTIFFファイルを取得、バッファー初期値は0
     def get_geotiff_vi(self,vi_name: Literal['NDVI','EVI2','NDWI'], buffer: int=0):
                 
         shooting_date_list = self.get_shootingdate_list()
@@ -137,7 +136,7 @@ class SentinelImageREST:
                         f.write(image_content)
 
 
-    # TrueColorのGeotiffファイルを取得、バッファー初期値は0
+    # TrueColorのGeoTIFFファイルを取得、バッファー初期値は0
     def get_geotiff_tc(self, buffer: int=0):
                 
         shooting_date_list = self.get_shootingdate_list()
@@ -253,7 +252,6 @@ class SentinelImageREST:
         )
         return response.content
 
-
     # GeoTIFFデータ（トゥルーカラー）の取得
     def __get_tc_image_content(self,coords, shooting_date: str, buffer: int=0):
 
@@ -312,37 +310,27 @@ class SentinelImageREST:
                 asset_id_list.append(i['id'])
             return asset_id_list
 
-    # Geotiffファイル（各バンド）の取得
-    def get_geotiff_raw_from_assetid(self, output_image_dir: str) -> None:
+    # GeoTIFFファイル（各バンド）の取得
+    def get_geotiff_raw_with_assetid(self, asset_id) -> None:
     
-        asset_id_list = self.get_asset_id_list()
-
-        list_len = len(asset_id_list)
-        count = 0
-
-        for asset_id in asset_id_list:
-
-            count += 1
-            print('download asset_ID GeoTIFF...',count,'/',list_len)
-        
-            name = '{}/assets/{}'.format(PBULIC_PROJECT, asset_id)
-            url = 'https://earthengine.googleapis.com/v1/{}:getPixels'.format(name)
-            body = json.dumps({
-                'fileFormat': 'GEO_TIFF',
-                'bandIds': ['B2', 'B3', 'B4', 'B8', 'B11'],
-                'region': {"type":"Polygon", "coordinates": self.coords },
-                'grid': {'crsCode': 'EPSG:4326'},
-            })
-        
-            response = self.session.post(url, body)
-            content = response.content
-        
-            asset_id_date = asset_id.split('/')[-1]
-        
-            with open(output_image_dir + self.field_name +\
-                        '_raw_' + asset_id_date + '.tif','wb') as f:
-                f.write(content)
-
+        name = '{}/assets/{}'.format(PBULIC_PROJECT, asset_id)
+        url = 'https://earthengine.googleapis.com/v1/{}:getPixels'.format(name)
+        body = json.dumps({
+            'fileFormat': 'GEO_TIFF',
+            'bandIds': ['B2', 'B3', 'B4', 'B8', 'B11'],
+            'region': {"type":"Polygon", "coordinates": self.coords },
+            'grid': {'crsCode': 'EPSG:3857'},
+        })
+    
+        response = self.session.post(url, body)
+        content = response.content
+    
+        asset_id_date = asset_id.split('/')[-1]
+    
+        with open(self.output_image_dir + self.field_name +\
+                    '_raw_' + asset_id_date + '.tif','wb') as f:
+            f.write(content)
+                
     # メッシュポリゴンに時系列VIデータを付与しGeoDataFrame形式で返す
     def create_vi_meshpolygon(self,
                                 vi_name: Literal['NDVI','EVI2','NDWI','OM'], 
@@ -458,12 +446,12 @@ class SentinelImageREST:
         east  = rasterioDataset.bounds.right
         north = rasterioDataset.bounds.top
         trans_proj = Transformer.from_crs(beforeEpsg, afterEpsg, always_xy=True)
-        nw4326 = trans_proj.transform(west, north)
-        ne4326 = trans_proj.transform(east, north)
-        se4326 = trans_proj.transform(east, south)
-        sw4326 = trans_proj.transform(west, south)
+        bb_nw = trans_proj.transform(west, north)
+        bb_ne = trans_proj.transform(east, north)
+        bb_se = trans_proj.transform(east, south)
+        bb_sw = trans_proj.transform(west, south)
 
-        return [list(nw4326),list(ne4326),list(se4326),list(sw4326)]
+        return [list(bb_nw),list(bb_ne),list(bb_se),list(bb_sw)]
 
     # foliumで表示されるためにnumpy形式のndviデータとbounds（画像矩形座標）を取得
     def get_numpy_ndvi(self, shooting_date: str, buffer: int=0):

@@ -1,23 +1,33 @@
+<<<<<<< HEAD
 from sentinelimagerest import SentinelImageREST
+=======
+# 上位インポート先を追加
+import os,sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from sentinelimagerest.sentinelimagerest import SentinelImageREST
+
+# from sentinelimagerest import SentinelImageREST
+>>>>>>> devdocker
 
 # 画像取得したいポリゴン座標
-coords =[[
-    [143.276643,43.211713],
-    [143.277662,43.211573],
-    [143.277496,43.211322],
-    [143.276525,43.211498],
-    [143.276643,43.211713]
+coords = [[
+    [143.29167898201092,43.248463884808274],
+    [143.29104781830006,43.2455521734021],
+    [143.2973895108188,43.244829697141114],
+    [143.29799061911575,43.247719550773894],
+    [143.29167898201092,43.248463884808274]
 ]]
+
+field_name = 'usage_rest'
 # 対象期間（開始）
-start_date ='2021-07-10'
+start_date ='2021-07-01'
 # 対象期間（終了）
-end_date = '2021-7-20'
+end_date = '2021-7-25'
 # 雲被覆率フィルタリングの上限値
 cloudy_pixel_percentage_limit = 30
 # 出力先フォルダ（相対パス）
 output_dir = './'
 
-field_name = 'usage'
 
 # SentinelImageRESTクラスオブジェクトの作成
 obj = SentinelImageREST(coords, start_date, end_date, cloudy_pixel_percentage_limit,output_dir,field_name)
@@ -35,10 +45,12 @@ obj.get_geotiff_vi('EVI2')
 obj.get_geotiff_tc()
 
 # 対象圃場の衛星データのAssetID（例：COPERNICUS/S2_SR/20210711T012659_20210711T013301_T54TXN）をリストで取得
-print(obj.get_asset_id_list())
+asset_id_list = obj.get_asset_id_list()
+print('asset_id_list',asset_id_list)
 
-# Geotiffファイル（各バンド）の取得
-obj.get_geotiff_raw_from_assetid(output_dir)
+for asset_id in asset_id_list:
+    obj.get_geotiff_raw_with_assetid(asset_id)
+
 
 # メッシュポリゴンに時系列VIデータを付与しGeoDataFrameデータをFlatGeobuf形式で保存（Q-GIS3.16で動作確認）
 obj.create_vi_meshpolygon('EVI2').to_file('test.fgb',index=False,driver='FlatGeobuf',spatial_index='No')
