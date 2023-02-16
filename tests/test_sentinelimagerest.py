@@ -91,7 +91,7 @@ class TestSentinelImageREST(unittest.TestCase):
         self.assertEqual(asset_id_list[0],'COPERNICUS/S2_SR_HARMONIZED/20210716T012701_20210716T012658_T54TXN')
 
     def test_geotiff_raw_assetid(self):
-        self.obj_assetid.get_geotiff_raw_from_assetid(self.output_assetid_dir)
+        self.obj_assetid.get_geotiff_raw_with_assetid(self.output_assetid_dir)
         img_list = glob.glob(self.output_assetid_dir + '/*')
         for img in img_list:
             self.assertEqual('tif',img[-3:])
