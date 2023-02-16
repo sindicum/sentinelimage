@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json, io, os, urllib
+from typing import Literal
 
 import ee
 from google.auth.transport.requests import AuthorizedSession
@@ -100,13 +101,13 @@ class SentinelPointREST:
     # 各バンド反射率（0〜1）、NDVI、EVI2を辞書形式で取得
     def get_computed_point_data(self):
 
+        # reprojectionを当初EPSG:4326で行ったが、たびたび0となったためEPSG:3857で再投影（要検討）
         def create_ee_image_object(shooting_date):
             ee_image_obj = ee.ImageCollection(ASSETS)\
                 .filterBounds(ee.Geometry.Point(self.point_coords))\
                 .filterDate(ee.Date(shooting_date), ee.Date(shooting_date).advance(1,'day'))\
-                .select(['B2','B3','B4','B8','B11','SCL'])\
                 .mean()\
-                .reproject('EPSG:4326',None,10)\
+                .reproject('EPSG:3857',None,10)\
                 .clip(ee.Geometry.Point(self.point_coords))
             return ee_image_obj
         
@@ -114,26 +115,26 @@ class SentinelPointREST:
         point_raw_array = []
         
         for shooting_date in shooting_date_list:
-            url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'
-            url = url.format(PROJECT_ID)
+            url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'.format(PROJECT_ID)
             response = self.session.post(
                 url=url,
                 data=json.dumps({
                 'expression': ee.serializer.encode(create_ee_image_object(shooting_date)),
                 'fileFormat': 'NPY',
+                'bandIds':['B2','B3','B4','B8','B11','SCL']
                 })
             )
+
             pixel_content = response.content
             array = numpy.load(io.BytesIO(pixel_content))
-
             b2 = float('{:.4f}'.format(array[0][0][0]/10000)) 
             b3 = float('{:.4f}'.format(array[0][0][1]/10000)) 
             b4 = float('{:.4f}'.format(array[0][0][2]/10000)) 
             b8 = float('{:.4f}'.format(array[0][0][3]/10000)) 
-            b11 = float('{:.4f}'.format(array[0][0][4]/10000)) 
-            ndvi = float('{:.4f}'.format((b8-b4)/(b8+b4)))
+            b11 = float('{:.4f}'.format(array[0][0][4]/10000))
+            ndvi = float('{:.4f}'.format((b8-b4)/(b8+b4))) if b8 and b4 != 0 else None
             evi2 = float('{:.4f}'.format(2.5*(b8-b4)/(b8+2.4*b4+1))) 
-            scl = array[0][0][5]
+            scl = int(array[0][0][5])
 
             point_raw_array.append({
                 'shooting_date':str(shooting_date),

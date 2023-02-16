@@ -141,6 +141,7 @@ class SentinelImage():
             )
         task.start()
 
+    # 衛星画像のassetID取得
     def get_asset_id(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
@@ -149,6 +150,7 @@ class SentinelImage():
 
         return imgCollection.aggregate_array('system:index').getInfo()
 
+    # 衛星名の取得
     def get_spacecraft_name(self):
         
         imgCollection=self.ee.ImageCollection(self.data_set)\
@@ -157,10 +159,11 @@ class SentinelImage():
 
         return imgCollection.aggregate_array('SPACECRAFT_NAME').getInfo()
 
+    # assetIDを基に当該衛星画像を取得 
     def get_asset_id_image(self,asset_id):
-        image=self.ee.Image(asset_id).select(['B2','B3','B4','B8','B11','SCL'])
-
-        fileNamePrefix = 'asset_id'
+        
+        image=self.ee.Image(self.data_set +'/' +asset_id).select(['B2','B3','B4','B8','B11'])
+        fileNamePrefix = asset_id
         self.__downloadImageToDrive(image,fileNamePrefix)
         
     # バッチ処理の状態確認

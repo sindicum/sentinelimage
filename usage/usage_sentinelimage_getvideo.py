@@ -1,9 +1,9 @@
-import glob,os,shutil,sys,unittest
-
 # 上位インポート先を追加
+import os,sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 from sentinelimage.sentinelimage import SentinelImage
+
+# from sentinelimage import SentinelImage
 
 # 動画取得したいポリゴン座標
 coords = [[
@@ -15,7 +15,7 @@ coords = [[
 ]]
 
 # 出力動画名の接頭辞
-image_name = 'escon'
+image_name = 'EsConField'
 # 対象期間（開始）
 start_date ='2019-04-15'
 # 対象期間（終了）

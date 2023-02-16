@@ -1,8 +1,6 @@
-import glob,os,shutil,sys,unittest
-
 # 上位インポート先を追加
+import glob,os,shutil,sys,unittest
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 from sentinelimagerest.sentinelimagerest import SentinelImageREST
 
 class TestSentinelImageREST(unittest.TestCase):

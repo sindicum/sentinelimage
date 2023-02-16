@@ -1,0 +1,10 @@
+version: '3'
+services:
+  jupyterlab:
+    container_name: 'SentinelimageREST'
+    build: .
+    env_file: ./docker.env
+    volumes:
+      - .:/code
+    tty: true
+    stdin_open: true
