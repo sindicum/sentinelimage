@@ -8,6 +8,7 @@ from google.oauth2 import service_account
 
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 from pyproj import Transformer, Geod
 from rasterio.io import MemoryFile
 from shapely.geometry import Polygon
@@ -453,7 +454,7 @@ class SentinelImageREST:
 
         return [list(bb_nw),list(bb_ne),list(bb_se),list(bb_sw)]
 
-    # foliumで表示されるためにnumpy形式のndviデータとbounds（画像矩形座標）を取得
+    # folium等で表示させるために、numpy形式のndviデータとbounds（画像矩形座標）を取得
     def get_numpy_ndvi(self, shooting_date: str, buffer: int=0):
         
         # バッファー0はエラーが出る
@@ -502,9 +503,9 @@ class SentinelImageREST:
 
                 return {'image': rasterio_dataset.read()[0],'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
 
-    # foliumで表示されるためにnumpy形式のtcデータとbounds（画像矩形座標）を取得
+    # numpy形式のtcデータとbounds（画像矩形座標）を取得
     def get_numpy_tc(self, shooting_date: str, buffer: int=0):
-        
+
         # バッファー0はエラーが出る
         if buffer == 0:
             clip_geom = ee.Geometry.Polygon(self.coords)
@@ -547,4 +548,43 @@ class SentinelImageREST:
                 ne4326 = trans_proj.transform(east, north)
                 sw4326 = trans_proj.transform(west, south)
 
-                return {'image': rasterio_dataset.read(),'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
+
+                return {'image': image_content,'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
+
+    # matplotlibで表示させるために、numpy形式のtcデータを取得
+    def get_numpy_tc_for_matplotlib(self, shooting_date: str, buffer: int=0):
+
+        # バッファー0はエラーが出る
+        if buffer == 0:
+            clip_geom = ee.Geometry.Polygon(self.coords)
+        else:
+            clip_geom = ee.Geometry.Polygon(self.coords).buffer(buffer)
+            
+
+        ee_image_obj = ee.ImageCollection(ASSETS)\
+            .filterBounds(ee.Geometry.Polygon(self.coords))\
+            .filterDate(ee.Date(shooting_date), ee.Date(shooting_date).advance(1,'day'))\
+            .select(['TCI_R', 'TCI_G', 'TCI_B'])\
+            .mean()\
+            .reproject('EPSG:3857',None,10)\
+            .clip(clip_geom)
+
+        url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'
+        url = url.format(PROJECT_ID)
+        response = self.session.post(
+            url=url,
+            data=json.dumps({
+            'expression': ee.serializer.encode(ee_image_obj),
+            'fileFormat': 'GEO_TIFF',
+            'grid': {
+                'crsCode': 'EPSG:3857'
+                }
+            }),
+        )
+        image_content = response.content
+
+        with MemoryFile(image_content) as memfile:
+            with memfile.open() as rasterio_dataset:
+                arr = np.array(rasterio_dataset.read()).astype('uint8')
+                return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
+
