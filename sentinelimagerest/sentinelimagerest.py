@@ -623,5 +623,5 @@ class SentinelImageREST:
 
         with MemoryFile(image_content) as memfile:
             with memfile.open() as rasterio_dataset:
-                arr = np.array(rasterio_dataset.read()).astype('uint8')
+                arr = np.array(rasterio_dataset.read())
                 return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
