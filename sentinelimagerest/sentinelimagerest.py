@@ -588,3 +588,40 @@ class SentinelImageREST:
                 arr = np.array(rasterio_dataset.read()).astype('uint8')
                 return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
 
+    # matplotlibで表示させるために、numpy形式のtcデータを取得
+    def get_numpy_ndvi_for_matplotlib(self, shooting_date: str, buffer: int=0):
+
+        # バッファー0はエラーが出る
+        if buffer == 0:
+            clip_geom = ee.Geometry.Polygon(self.coords)
+        else:
+            clip_geom = ee.Geometry.Polygon(self.coords).buffer(buffer)
+            
+        ee_image_obj = ee.ImageCollection(ASSETS)\
+            .filterBounds(ee.Geometry.Polygon(self.coords))\
+            .filterDate(ee.Date(shooting_date), ee.Date(shooting_date).advance(1,'day'))\
+            .select(['B8','B4'])\
+            .mean()\
+            .normalizedDifference(['B8', 'B4']).rename('NDVI')\
+            .reproject('EPSG:3857',None,10)\
+            .clip(clip_geom)
+
+        url = 'https://earthengine.googleapis.com/v1/projects/{}/image:computePixels'
+        url = url.format(PROJECT_ID)
+        response = self.session.post(
+            url=url,
+            data=json.dumps({
+            'expression': ee.serializer.encode(ee_image_obj),
+            'fileFormat': 'GEO_TIFF',
+            'grid': {
+                'crsCode': 'EPSG:3857'
+                },
+            'bandIds': ['NDVI'],
+            }),
+        )
+        image_content = response.content
+
+        with MemoryFile(image_content) as memfile:
+            with memfile.open() as rasterio_dataset:
+                arr = np.array(rasterio_dataset.read()).astype('uint8')
+                return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
