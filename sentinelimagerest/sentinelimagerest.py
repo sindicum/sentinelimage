@@ -550,7 +550,6 @@ class SentinelImageREST:
 
                 numpy_tc = np.transpose(rasterio_dataset.read(), (1, 2, 0))
                 return {'image': numpy_tc ,'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
-                # return {'image': image_content,'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
 
     # matplotlibで表示させるために、numpy形式のtcデータを取得
     def get_numpy_tc_for_matplotlib(self, shooting_date: str, buffer: int=0):
