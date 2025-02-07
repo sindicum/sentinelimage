@@ -548,8 +548,8 @@ class SentinelImageREST:
                 ne4326 = trans_proj.transform(east, north)
                 sw4326 = trans_proj.transform(west, south)
 
-
-                return {'image': image_content,'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
+                numpy_tc = np.transpose(rasterio_dataset.read(), (1, 2, 0))
+                return {'image': numpy_tc ,'bounds':[[sw4326[1],sw4326[0]],[ne4326[1],ne4326[0]]]}
 
     # matplotlibで表示させるために、numpy形式のtcデータを取得
     def get_numpy_tc_for_matplotlib(self, shooting_date: str, buffer: int=0):
@@ -582,13 +582,21 @@ class SentinelImageREST:
             }),
         )
         image_content = response.content
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> dev
         with MemoryFile(image_content) as memfile:
             with memfile.open() as rasterio_dataset:
                 arr = np.array(rasterio_dataset.read()).astype('uint8')
                 return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
 
+<<<<<<< HEAD
     # matplotlibで表示させるために、numpy形式のtcデータを取得
+=======
+    # matplotlibで表示させるために、numpy形式のndviデータを取得
+>>>>>>> dev
     def get_numpy_ndvi_for_matplotlib(self, shooting_date: str, buffer: int=0):
 
         # バッファー0はエラーが出る
