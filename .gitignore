@@ -3,3 +3,6 @@ __pycache__
 *.json
 docker.env
 venv
+dev
+.ipynb_checkpoints
+sentinelimage_dev
