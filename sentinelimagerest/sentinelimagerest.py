@@ -582,21 +582,14 @@ class SentinelImageREST:
             }),
         )
         image_content = response.content
-<<<<<<< HEAD
-
-=======
         
->>>>>>> dev
         with MemoryFile(image_content) as memfile:
             with memfile.open() as rasterio_dataset:
                 arr = np.array(rasterio_dataset.read()).astype('uint8')
                 return [[list(map(lambda x:x[j][i],arr)) for i in range(arr.shape[2])] for j in range(arr.shape[1])]
 
-<<<<<<< HEAD
-    # matplotlibで表示させるために、numpy形式のtcデータを取得
-=======
+
     # matplotlibで表示させるために、numpy形式のndviデータを取得
->>>>>>> dev
     def get_numpy_ndvi_for_matplotlib(self, shooting_date: str, buffer: int=0):
 
         # バッファー0はエラーが出る
