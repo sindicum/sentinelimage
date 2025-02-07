@@ -6,6 +6,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'earthengine-api>=0.1.326',
-        'geetool>s=0.6.14,<0.7'
+        'geetools>=0.6.14,<0.7'
         ]
 )
